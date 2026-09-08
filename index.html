@@ -277,6 +277,7 @@ footer a{color:var(--gold)}
   var q=document.getElementById("q"), go=document.getElementById("go"), res=document.getElementById("res");
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function loc(r){var a=[];if(r.city)a.push(esc(r.city));if(r.county)a.push(esc(r.county));return a.join(", ");}
   function render(d){
     if(d.field_status==="not_run"){res.innerHTML='<p class="rmeta">'+esc(d.note)+'</p>';return;}
     if(d.field_status==="none_found"){
@@ -286,9 +287,10 @@ footer a{color:var(--gold)}
     var h='<p class="rmeta">'+d.count+' match'+(d.count===1?"":"es")+
       (d.returned<d.count?', showing '+d.returned:'')+'</p><div class="rlist">';
     d.results.forEach(function(r){
+      var l=loc(r);
       h+='<div class="ritem"><div><p class="nm">'+esc(r.name)+'</p><p class="dt"><span class="lic">'+
         esc(r.license_number||"\u2014")+'</span> \u00b7 '+esc(r.trade||"Trade not recorded")+
-        (r.city?' \u00b7 '+esc(r.city):'')+'</p></div><div>'+
+        (l?' \u00b7 '+l:'')+'</p></div><div>'+
         (r.claimed?'<span class="flag claimed">CLAIMED</span>'
                   :'<span class="flag">'+(r.record_dated?'RECORD DATED':'UNCLAIMED')+'</span>')+
         '</div></div>';});
