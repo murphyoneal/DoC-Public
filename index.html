@@ -164,7 +164,7 @@ input:hover{border-color:#B9C3D4}
 .hint{font-size:14px;color:var(--grey-navy);margin-top:14px}
 
 
-#res{margin-top:28px}
+#res{margin-top:28px;scroll-margin-top:76px}
 .rmeta{font-size:14px;color:var(--grey-navy);margin:0 0 14px;letter-spacing:.01em}
 .rlist{border-top:1px solid var(--line-2)}
 .ritem{padding:15px 0;border-bottom:1px solid var(--line-2);display:grid;
@@ -296,10 +296,12 @@ footer a{color:var(--gold)}
         '</div></div>';});
     h+='</div><p class="rnote">'+esc(d.coverage_note)+' Source: '+esc(d.source)+
        ', retrieved '+esc(d.source_retrieved)+'.</p>';
-    res.innerHTML=h;}
+    res.innerHTML=h;
+    try{res.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){res.scrollIntoView(true);}}
   function run(){
     var v=(q.value||"").trim();
     res.innerHTML='<p class="rmeta">Searching\u2026</p>';
+    try{res.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){res.scrollIntoView(true);}
     fetch(URL,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+KEY,
       "Content-Type":"application/json"},body:JSON.stringify({q:v,lim:25})})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
