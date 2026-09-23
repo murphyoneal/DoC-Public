@@ -1,0 +1,13 @@
+# Nothing on this site is crawled until every form and function is tested and audited.
+#
+# This file was ABSENT until 2026-09-23 and /robots.txt returned 404, so the contractor
+# register was open to crawlers. The site-wide kill-switch on the sibling domain
+# (SITE_INDEXABLE, app/robots.ts + app/layout.tsx) is part of the Next.js app on
+# departmentofproperty.com and never covered this static deploy. That was an omission.
+#
+# robots.txt asks a crawler not to FETCH. It is not an index directive: a page linked from
+# elsewhere can still be indexed without ever being fetched. The <meta name="robots"
+# content="noindex, nofollow"> in index.html is the half that actually prevents indexing.
+# Both, not either.
+User-agent: *
+Disallow: /
