@@ -204,9 +204,9 @@ footer a{color:var(--gold)}
 </div></nav>
 <header class="hero"><div class="wrap">
 <p class="tag">FLORIDA · 114,104 LICENCE RECORDS</p>
-<h1>Who worked on it, and when they were licensed.</h1>
-<p class="lede">Florida's licensed trades, held with their history — not just who holds a licence today. Free to search, free to claim.</p>
-<div class="search"><input id="q" type="search" placeholder="Business name, licence number, or trade" aria-label="Search the contractor register" autocomplete="off"><button id="go" type="button" data-track="doc-search">Search</button></div>
+<h1>Florida's licensed construction contractors, from the state licence file. Free to search.</h1>
+<p class="lede">Type a business name, licence number or trade. Pick a county, or add a town, to narrow it. Electrical contractors are licensed separately and are not in this file.</p>
+<div class="search"><input id="q" type="search" placeholder="e.g. roofing, or Sowell Construction, or CGC1527697" aria-label="Search the contractor register" autocomplete="off"><select id="county" aria-label="County" style="border:1px solid #cfc8bd;border-radius:6px;padding:0 8px;font:inherit;background:#fff"><option value="">All Florida counties</option><option value="alachua">Alachua</option><option value="baker">Baker</option><option value="bay">Bay</option><option value="bradford">Bradford</option><option value="brevard">Brevard</option><option value="broward">Broward</option><option value="calhoun">Calhoun</option><option value="charlotte">Charlotte</option><option value="citrus">Citrus</option><option value="clay">Clay</option><option value="collier">Collier</option><option value="columbia">Columbia</option><option value="desoto">DeSoto</option><option value="dixie">Dixie</option><option value="duval">Duval</option><option value="escambia">Escambia</option><option value="flagler">Flagler</option><option value="franklin">Franklin</option><option value="gadsden">Gadsden</option><option value="gilchrist">Gilchrist</option><option value="glades">Glades</option><option value="gulf">Gulf</option><option value="hamilton">Hamilton</option><option value="hardee">Hardee</option><option value="hendry">Hendry</option><option value="hernando">Hernando</option><option value="highlands">Highlands</option><option value="hillsborough">Hillsborough</option><option value="holmes">Holmes</option><option value="indian_river">Indian River</option><option value="jackson">Jackson</option><option value="jefferson">Jefferson</option><option value="lafayette">Lafayette</option><option value="lake">Lake</option><option value="lee">Lee</option><option value="leon">Leon</option><option value="levy">Levy</option><option value="liberty">Liberty</option><option value="madison">Madison</option><option value="manatee">Manatee</option><option value="marion">Marion</option><option value="martin">Martin</option><option value="dade">Miami-Dade</option><option value="monroe">Monroe</option><option value="nassau">Nassau</option><option value="okaloosa">Okaloosa</option><option value="okeechobee">Okeechobee</option><option value="orange">Orange</option><option value="osceola">Osceola</option><option value="palm_beach">Palm Beach</option><option value="pasco">Pasco</option><option value="pinellas">Pinellas</option><option value="polk">Polk</option><option value="putnam">Putnam</option><option value="santa_rosa">Santa Rosa</option><option value="sarasota">Sarasota</option><option value="seminole">Seminole</option><option value="st_johns">St. Johns</option><option value="st_lucie">St. Lucie</option><option value="sumter">Sumter</option><option value="suwannee">Suwannee</option><option value="taylor">Taylor</option><option value="union">Union</option><option value="volusia">Volusia</option><option value="wakulla">Wakulla</option><option value="walton">Walton</option><option value="washington">Washington</option></select><button id="go" type="button" data-track="doc-search">Search</button></div>
 <p class="hint">114,104 licence records · 29 trades · statewide · state file retrieved 27 Jun 2026</p>
 <div id="res" aria-live="polite"></div>
 </div></header>
@@ -294,11 +294,11 @@ footer a{color:var(--gold)}
   function render(d){
     if(d.field_status==="not_run"){res.innerHTML='<p class="rmeta">'+esc(d.note)+'</p>';return;}
     if(d.field_status==="none_found"){
-      res.innerHTML='<p class="rmeta">No licence record matches &ldquo;'+esc(d.query)+'&rdquo; in the state file we hold.</p>'+
+      res.innerHTML='<p class="rmeta">No licence record matches &ldquo;'+esc((d.terms||[]).join(" "))+'&rdquo;'+(d.county_filter?' in '+esc(document.getElementById("county").selectedOptions[0].text)+' County':'')+' in the state file we hold.</p>'+
         '<p class="rnote">This is what our copy of the register contains \u2014 not a statement that no such contractor exists. The state file excludes null-and-void, delinquent and involuntarily inactive records.</p>';
       return;}
     var h='<p class="rmeta">'+d.count+' match'+(d.count===1?"":"es")+
-      (d.returned<d.count?', showing '+d.returned:'')+'</p><div class="rlist">';
+      (d.returned<d.count?', showing '+d.returned+' — add a word or pick a county to narrow':'')+'</p>'+(d.match_rule?'<p class="rnote">'+esc(d.match_rule)+'</p>':'')+'<div class="rlist">';
     d.results.forEach(function(r){
       var l=loc(r);
       // Every row in the register has a slug today, but a row without one gets plain text
@@ -316,7 +316,8 @@ footer a{color:var(--gold)}
     res.innerHTML=h;
     try{res.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){res.scrollIntoView(true);}}
   function run(){
-    var v=(q.value||"").trim();
+    var c=document.getElementById("county").value;
+    var v=((q.value||"").trim()+(c?" county:"+c:"")).trim();
     res.innerHTML='<p class="rmeta">Searching\u2026</p>';
     try{res.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){res.scrollIntoView(true);}
     fetch(URL,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+KEY,
@@ -325,6 +326,7 @@ footer a{color:var(--gold)}
       .then(render)
       .catch(function(){res.innerHTML='<p class="rmeta">The register could not be reached just now. That is a fault on our side, not a result \u2014 please try again shortly.</p>';});}
   go.addEventListener("click",run);
+  document.getElementById("county").addEventListener("change",function(){if((q.value||"").trim()||this.value)run();});
   q.addEventListener("keydown",function(e){if(e.key==="Enter")run();});
 })();
 </script>
